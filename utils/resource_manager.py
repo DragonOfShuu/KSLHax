@@ -2,7 +2,6 @@ import json
 import traceback
 from error_handling import CompletelyDestroyedException
 from dotenv import load_dotenv
-from typing import Any
 import shutil
 import os
 
