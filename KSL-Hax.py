@@ -1,9 +1,10 @@
 import traceback
+import platform as pf
 import os
 
 from error_handling import CompletelyDestroyedException, ApplicationErrorWindow, ErrorData
 
-os.system('cls')
+os.system('cls' if pf.system() == "Windows" else "clear")
 
 try:
     from app import App 
