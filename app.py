@@ -1,11 +1,8 @@
 from background_tasks import BackgroundTasks
-from tkinter import messagebox
 from dotenv import load_dotenv
-from utils import Resources
+from resources import ResourceManager
 import customtkinter as ct
 from gui import Gui
-import traceback
-import os
 
 load_dotenv()
 ct.set_appearance_mode('default')
@@ -14,7 +11,7 @@ class App(ct.CTk):
     def __init__(self) -> None:
         super().__init__()
 
-        Resources.verify_files()
+        ResourceManager.verify_files()
 
         self.title("KSL Hax")
         self.background_tasks = BackgroundTasks(self)

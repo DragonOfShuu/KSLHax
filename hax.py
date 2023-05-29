@@ -1,18 +1,18 @@
 from urllib.parse import unquote_plus
+from dataclasses import asdict
 import importlib.util as ilu
 from dacite import from_dict
-# from error_handling import ErrorWindow
-from utils import Resources
 from typing import Callable
-from data_types import Car, Configuration
-from error_handling import ErrorData, DescriptiveException
-from dataclasses import asdict
 import requests as r
 import traceback
 import json as j
 import time as t
 import sys
 import os
+
+from error_handling import ErrorData, DescriptiveException
+from data_types import Car, Configuration
+from resources import ResourceManager
 
 # Under normal circumstances, this is the URL that would be called
 main_url: str = "https://cars.ksl.com/search/make/Acura;Ford;Honda;Mazda;Mitsubishi;Toyota;Volkswagen/model/TL;Fiesta;Focus;Fusion;Taurus;Accord;Civic;Fit;Mazda2;Mazda3;Mazda3+Hatchback;Mazda3+Sedan;Mazda6;Eclipse;Eclipse+Spyder;Lancer;Camry;Celica;Corolla;Echo;Yaris;Yaris+Hatchback;Golf/mileageTo/160000/priceTo/5000/zip/84123/miles/25/priceFrom/2000/titleType/Clean+Title/yearFrom/1995"
@@ -27,11 +27,15 @@ def requestCars(session: r.Session, headers: dict, page: int, url: str = main_ur
     # Remove trailing spaces, remove domain name, remove random hashtag, then parse from url to normal string
     url = unquote_plus(url.strip().removeprefix("https://cars.ksl.com/search/").removesuffix("#"))
     # Make the ability to sift through pages
-    request_body: list = ["perPage", 24, "page", page]
+    request_body: list = []
     # Break URL into a list (because that is what the database understands)
     request_body.extend(url.split( "/" ))
     # Add the query group
     request_body.extend(["es_query_group",None])
+    request_body.extend(["perPage", 24, "page", page])
+
+    adjusted_headers: dict = headers.copy()
+    adjusted_headers.update({"Referer": url})
 
     data = {
         "endpoint":"/classifieds/cars/search/searchByUrlParams",
@@ -56,12 +60,12 @@ def requestCars(session: r.Session, headers: dict, page: int, url: str = main_ur
     return the_json.get("data").get("items")
 
 
-def requestAllCars(session: r.Session, headers: dict, url: str = main_url, max_pages: int = 5):
+def requestAllCars(session: r.Session, headers: dict, url: str = main_url, max_pages: int = 5) -> list:
     the_masses: list = []
 
-    if Resources.offline_mode:
+    if ResourceManager.offline_mode:
         print("WARNING, APPLICATION IS IN TEST MODE.")
-        return Resources.scored_data.read()
+        return ResourceManager.scored_data.read()
     
     count: int = 0
     while count!=max_pages:
@@ -100,24 +104,28 @@ def filter(configuration: Configuration, callback: Callable[[list[Car]], None] |
 
     with r.Session() as s:
         headers = {
-            'user-agent': 'ksl-crawler',
-            'Content-Type': 'application/json'
+            'User-Agent': configuration.user_agent,
+            # 'User-Agent': 'ksl-crawler',
+            'Content-Type': 'application/json',
+            'Host': 'cars.ksl.com',
+            'Origin': 'https://cars.ksl.com'
         }
 
         raw = requestAllCars(s, headers, configuration.url, configuration.page_count)
 
         start_time = t.perf_counter()
+        raw = remove_duplicates(raw)
         data = remove_blacklisted( convert_to_car(raw) ) 
         scored_data = score_data(data, configuration.score_script_location)
         print(f"The size of the scored data is: {len(scored_data)}")
 
-        Resources.scored_data.write([asdict(x) for x in scored_data])
+        ResourceManager.scored_data.write([asdict(x) for x in scored_data])
 
         mark_old(scored_data:=only_new(scored_data))
 
+        finish_time = t.perf_counter()
+        print(f"Completed in {round(finish_time - start_time, 3)}s")
         callback(scored_data)
-    finish_time = t.perf_counter()
-    print(f"Completed in {round(finish_time - start_time, 3)}s")
 
 
 def score_data(data: list[Car], scoring_module: str = f"{os.getcwd()}\\scoring\\default_scoring.py"):
@@ -144,6 +152,12 @@ def score_data(data: list[Car], scoring_module: str = f"{os.getcwd()}\\scoring\\
         raise DescriptiveException(ErrorData(title="Your Fault.", text="Your Script Caused an Error:", stack_trace="".join(traceback.format_exception_only(e))))
 
 
+def remove_duplicates(data: list[dict]):
+    returnable = []
+    [returnable.append(i) for i in data if i not in returnable]
+    return returnable
+
+
 def format_car(car: dict):
     if "photo" in car and len(car["photo"]) > 0:
         photo = car["photo"][0]
@@ -163,12 +177,12 @@ def convert_to_car(data: list[dict], perform_format: bool = True) -> list[Car]:
 
 
 def remove_blacklisted(data: list[Car]):    
-    blacklist: list[str] = Resources.blacklist_data.read()
+    blacklist: list[str] = ResourceManager.blacklist_data.read()
     return [i for i in data if (not i.id in blacklist)]
 
 
 def only_new(data: list[Car]):
-    old_list: list[str] = Resources.old_data.read()
+    old_list: list[str] = ResourceManager.old_data.read()
     new_data = []
     for i in data:
         if (not i.id in old_list):
@@ -178,8 +192,8 @@ def only_new(data: list[Car]):
 
 
 def mark_old(data: list[Car]):
-    x = Resources.old_data.read()
+    x = ResourceManager.old_data.read()
 
     for i in data: x.append(i.id)
     
-    Resources.old_data.write(x)
+    ResourceManager.old_data.write(x)

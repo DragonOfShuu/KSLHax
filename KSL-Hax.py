@@ -1,6 +1,7 @@
-from error_handling import CompletelyDestroyedException, ApplicationErrorWindow, ErrorData
 import traceback
 import os
+
+from error_handling import CompletelyDestroyedException, ApplicationErrorWindow, ErrorData
 
 os.system('cls')
 

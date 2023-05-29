@@ -1,10 +1,12 @@
 from typing import Callable
-from background_tasks import BackgroundTasks
-from utils import Resources, ProcessObject
 import customtkinter as ct
-from data_types import Car
 import webbrowser as web
 from PIL import Image
+
+from background_tasks import BackgroundTasks
+from resources import ResourceManager
+from utils import ProcessObject
+from data_types import Car
 
 class CarItem(ct.CTkFrame):
     def __init__(self, 
@@ -79,9 +81,9 @@ class CarItem(ct.CTkFrame):
     def _solve_image(self) -> Image.Image:
         if self.data.photo == None:
             self.finished()
-            return Image.open(Resources.default_image)
+            return Image.open(ResourceManager.default_image)
         image_name = self._isolate_image_name(self.data.photo)
-        image_full_name = f"{Resources.cache_location}{image_name}"
+        image_full_name = f"{ResourceManager.cache_location}{image_name}"
 
         return self.tasks.images("default", self.data.photo, image_full_name, self._get_image_thread)
 

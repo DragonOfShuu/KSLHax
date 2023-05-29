@@ -1,13 +1,15 @@
-from utils import ProcessObject, PaginationHelper, Resources
+import customtkinter as ct
+from typing import Any
+from itertools import chain
+from dataclasses import asdict
+
+from utils import ProcessObject, PaginationHelper
+from resources import ResourceManager
 from .labeled_progress import LabeledProgress
 from background_tasks import BackgroundTasks
 from .input_box import InputBox
 from .car_item import CarItem
 from data_types import Car
-import customtkinter as ct
-from typing import Any
-from itertools import chain
-from dataclasses import asdict
 
 class CarHolder(ct.CTkFrame, ProcessObject, PaginationHelper):
     def __init__(self, *args: Any, master: ct.CTkBaseClass, data: list[Car], progress: LabeledProgress | None, tasks: BackgroundTasks, **kwargs: Any):
@@ -40,13 +42,13 @@ class CarHolder(ct.CTkFrame, ProcessObject, PaginationHelper):
         # ==================
         # BOTTOM BAR CONTENT
         # ==================
-        self.bottom_bar = ct.CTkFrame(master=self, corner_radius=0)
+        self.bottom_bar = ct.CTkFrame(master=self, corner_radius=0, fg_color="transparent")
 
         self.bottom_bar.rowconfigure(0, weight=1)
         
         self.bottom_bar.columnconfigure((0, 1, 2), weight=1)
 
-        self.left_button = ct.CTkButton(master=self.bottom_bar, width=28, text="←", command=self.left_button_clicked)
+        self.left_button = ct.CTkButton(master=self.bottom_bar, width=35, height=40, text="←", command=self.left_button_clicked)
         self.left_button.grid(row=0, column=0, sticky=ct.W)
 
         self.bottom_center_content = ct.CTkFrame(master=self.bottom_bar, width=40, height=28, fg_color="transparent")
@@ -58,7 +60,7 @@ class CarHolder(ct.CTkFrame, ProcessObject, PaginationHelper):
         self.all_pages_label = ct.CTkLabel(master=self.bottom_center_content, text=f"/ {self.page_count()}")
         self.all_pages_label.pack(side=ct.LEFT)
 
-        self.right_button = ct.CTkButton(master=self.bottom_bar, width=28, text="→", command=self.right_button_clicked)
+        self.right_button = ct.CTkButton(master=self.bottom_bar, width=35, height=40, text="→", command=self.right_button_clicked)
         self.right_button.grid(row=0, column=2, sticky=ct.E)
 
         self.bottom_bar.grid(row=1, column=0, sticky=ct.NSEW)
@@ -151,13 +153,13 @@ class CarHolder(ct.CTkFrame, ProcessObject, PaginationHelper):
     def apply_blacklist(self):
         if len(self.pending_blacklist) == 0: return
 
-        black = Resources.blacklist_data.read()
+        black = ResourceManager.blacklist_data.read()
         black.extend(self.pending_blacklist)
-        Resources.blacklist_data.write(black)
+        ResourceManager.blacklist_data.write(black)
 
         data: list[Car] = chain.from_iterable(self.collection)
         data = [asdict(i) for i in data if not i.id in self.pending_blacklist]
-        Resources.scored_data.write(data)
+        ResourceManager.scored_data.write(data)
 
 
     def cleanup(self):

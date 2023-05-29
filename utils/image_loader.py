@@ -1,13 +1,14 @@
 from typing import Callable, Literal
-from data_types import ImageRequest
-from utils import Resources
-import urllib.request as u
 from urllib.error import HTTPError
+import urllib.request as u
 import threading as th
 from PIL import Image
 import queue as q
 import time as t
 import os
+
+from data_types import ImageRequest
+from resources import ResourceManager
 
 class ImageLoader:
     def __init__(self):
@@ -30,7 +31,7 @@ class ImageLoader:
                 u.urlretrieve(image.image_url, image.image_full_name)
             except HTTPError as e:
                 print(f"Because: {e.reason} ({e.code}), now {image.image_full_name} failed, and now we have to use a default image.")
-                image.callback(Resources.default_image, True)
+                image.callback(ResourceManager.default_image, True)
                 continue
 
             image.callback(image.image_full_name, False)
@@ -58,5 +59,5 @@ class ImageLoader:
         
         appendable: ImageRequest = ImageRequest(time_made, image_url, image_full_name, callback)
         self.images_queue.put(appendable)
-        return Image.open(Resources.default_image)
+        return Image.open(ResourceManager.default_image)
     

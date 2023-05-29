@@ -1,8 +1,9 @@
 import customtkinter as ct
-from utils import ImageLoader
 import threading as th
 import typing as t
 import queue as q
+
+from utils import ImageLoader
 
 class BackgroundTasks():
     def __init__(self, master: ct.CTkBaseClass):
@@ -12,7 +13,6 @@ class BackgroundTasks():
         self.master = master
 
         self.running_tasks: list[th.Thread] = []
-        # self.running_images: list[th.Thread] = []
 
         self.start()
         
