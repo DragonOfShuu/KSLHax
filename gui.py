@@ -9,6 +9,12 @@ from settings import Settings
 import hax as h
 
 class Gui(ct.CTkFrame):
+    '''
+    This is the GUI component
+    of the application. This
+    is used to manage all parts
+    of the application's interface.
+    '''
     def __init__(self, *args, master: ct.CTkBaseClass, tasks: BackgroundTasks, **kwargs):
         super().__init__(master=master, *args, **kwargs)
 
@@ -17,9 +23,17 @@ class Gui(ct.CTkFrame):
 
         self.pack(fill=ct.BOTH, expand=True, padx=20, pady=20)
         self.init_ui()
-
+        self.startup_task()
 
     def init_ui(self):
+        '''
+        This builds the interface
+        for the entire UI. 
+
+        PLEASE NOTE THAT THIS 
+        METHOD DOES NOT PACK
+        THE UI.
+        '''
         self.frame_of_cars: CarHolder = None
 
         self.buttons_panel = ct.CTkFrame(self, fg_color="transparent")
@@ -31,6 +45,15 @@ class Gui(ct.CTkFrame):
         self.start_button = ct.CTkButton(self.buttons_panel, width=200, height=48, text="Start Mission", command=self.begin_mission)
         self.start_button.grid(row=0, column=1)
 
+
+    def startup_task(self):
+        '''
+        This method notifies the
+        user that it is grabbing
+        the recently saved data,
+        and then applies it to
+        the interface.
+        '''
         self.progress = LabeledProgress(master=self, text="Preparing UI...", total_processees=2, width=800, height=300, fg_color="transparent")
         self.progress.set(0)
         self.progress.start()
@@ -40,26 +63,37 @@ class Gui(ct.CTkFrame):
 
 
     def pack_ui(self):
+        '''
+        This packs all components
+        of the UI together
+        '''
         self.frame_of_cars.pack(anchor=ct.CENTER, expand=True, fill=ct.BOTH)
-        # self.configurator.pack(anchor=ct.CENTER, expand=True, pady=20)
-        # self.mission_configure.pack()
-        # self.settings_button.pack()
-        # self.start_button.pack()
         self.buttons_panel.pack()
 
 
     def unpack_ui(self):
+        '''
+        This unpacks all components
+        of the UI.
+
+        More specifically, it tells
+        the frame_of_cars to cleanup,
+        and deletes it.
+        '''
         if not self.frame_of_cars == None: 
             self.frame_of_cars.pack_forget()
             self.frame_of_cars.cleanup()
             del self.frame_of_cars
 
         self.buttons_panel.pack_forget()
-        # self.start_button.pack_forget()
-        # self.settings_button.pack_forget()
 
 
     def show_settings(self):
+        '''
+        Show the settings menu,
+        and wait for it to be
+        closed
+        '''
         Settings().grab_set()
 
 

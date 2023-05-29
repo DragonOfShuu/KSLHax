@@ -19,7 +19,7 @@ main_url: str = "https://cars.ksl.com/search/make/Acura;Ford;Honda;Mazda;Mitsubi
 
 top_picks_length: int = 3
 
-def requestCars(session: r.Session, headers: dict, page: int, url: str = main_url) -> dict:
+def requestCars(session: r.Session, headers: dict, page: int, url: str = main_url, first_listing_id: str | None = None) -> list:
     url_getCars = "https://cars.ksl.com/nextjs-api/proxy?"
 
     assert "https://cars.ksl.com/search/" in url, "URL must be a KSL URL"
@@ -31,8 +31,10 @@ def requestCars(session: r.Session, headers: dict, page: int, url: str = main_ur
     # Break URL into a list (because that is what the database understands)
     request_body.extend(url.split( "/" ))
     # Add the query group
-    request_body.extend(["es_query_group",None])
     request_body.extend(["perPage", 24, "page", page])
+    if first_listing_id:
+        request_body.extend(["firstListingId", first_listing_id])
+    request_body.extend(["es_query_group",None])
 
     adjusted_headers: dict = headers.copy()
     adjusted_headers.update({"Referer": url})
@@ -153,9 +155,10 @@ def score_data(data: list[Car], scoring_module: str = f"{os.getcwd()}\\scoring\\
 
 
 def remove_duplicates(data: list[dict]):
-    returnable = []
-    [returnable.append(i) for i in data if i not in returnable]
-    return returnable
+    # returnable = []
+    # [returnable.append(i) for i in data if i not in returnable]
+    # return returnable
+    return data
 
 
 def format_car(car: dict):

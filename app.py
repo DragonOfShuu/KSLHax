@@ -8,6 +8,12 @@ load_dotenv()
 ct.set_appearance_mode('default')
 
 class App(ct.CTk):
+    '''
+    The application class; the all
+    encompassing class for the 
+    application. Use the start 
+    method to show the window
+    '''
     def __init__(self) -> None:
         super().__init__()
 
