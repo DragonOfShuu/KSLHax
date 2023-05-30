@@ -51,14 +51,25 @@ class CarItem(ct.CTkFrame):
         return image
 
 
-    def _isolate_image_name(self, id: str):
+    def _isolate_image_name(self, image_url: str):
         '''
-        
+        Isolate the image name from
+        the url.
+
+        Example
+        -
+        >>> _isolate_image_name('https://img.ksl.com/mx/mplace-cars.ksl.com/4826222-1684201630-965743.jpeg')
+        '4826222-1684201630-965743.jpeg'
         '''
         found_start: bool = False
         returnable: str = ""
-        for i in id:
+        # loop through the url from
+        # the beginning until a number
+        # is found
+        for i in image_url:
             if not (found_start or i.isnumeric()): continue
+            # Start adding each part of
+            # the image to the returnable
             returnable+=i
             found_start=True
         return returnable
@@ -66,7 +77,9 @@ class CarItem(ct.CTkFrame):
 
     def _get_image_thread(self, image_full_name: str, already_existed: bool):
         '''
-        
+        This method is ran when the 
+        image thread has successfully
+        retrieved the image.
         '''
         # Open Image
         opened_image: Image.Image = Image.open(image_full_name)
@@ -83,27 +96,49 @@ class CarItem(ct.CTkFrame):
             light_image=opened_image, 
             size=(200, 200)
         )
+        # Make sure self.photo exists
+        # (because it is being created
+        # in the main thread)
         while not self.photo: pass
+        # Then set it to the new image
         self.photo.configure(require_redraw=True, image=self.ctk_image)
         self.finished()
 
 
     def _solve_image(self) -> Image.Image:
         '''
-        
+        Turn an image net URL into
+        an image.
+
+        Returns a temporary image,
+        but gives the task to the
+        image thread, and gives it 
+        the class's callback 
+        `_get_image_thread` to run
+        upon the image's aquirement.
         '''
+        # If the photo is absent
         if self.data.photo == None:
+            # Mark this item as
+            # finished loading
             self.finished()
+            # And simply use the default image
             return Image.open(ResourceManager.default_image)
+        
+        # If the photo exists, get the base name
         image_name = self._isolate_image_name(self.data.photo)
+        # attach the directory to the front
         image_full_name = f"{ResourceManager.cache_location}{image_name}"
 
+        # and request it from the image thread
         return self.tasks.images("default", self.data.photo, image_full_name, self._get_image_thread)
 
 
     def _register_image(self) -> None:
         '''
-        
+        Set the self.ctk_image to 
+        an image. Runs `_solve_image`
+        to make the image.
         '''
         opened_image = self._solve_image()
         self.ctk_image = ct.CTkImage(
