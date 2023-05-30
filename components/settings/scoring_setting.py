@@ -3,13 +3,13 @@ import webbrowser
 import shutil
 import os
 
-from resources import ResourceManager
 from .settings_object import SettingsObject
+from resources import ResourceManager
+from data_types import Configuration
 
 class ScoringSetting(SettingsObject):
-    def __init__(self, master: ct.CTkBaseClass):
-        self.score_location = ResourceManager.configuration_data.get_configuration().score_script_location
-        super().__init__(master=master, title="Scoring")
+    def __init__(self, master: ct.CTkBaseClass, data: Configuration):
+        super().__init__(master=master, data=data, title="Scoring")
 
 
     def _fill_content(self, content: ct.CTkBaseClass):
@@ -17,7 +17,7 @@ class ScoringSetting(SettingsObject):
         # ==========
         # self.scoring_box = ct.CTkFrame(master=content)
         # self.scoring_box.grid(row=0, column=0, sticky=ct.NS)
-
+        self.score_location = self.data.score_script_location
         # Scoring configure
         content.rowconfigure(0, weight=1)
         content.rowconfigure(1, weight=3)

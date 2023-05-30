@@ -3,6 +3,15 @@ import customtkinter as ct
 import tkinter as t
 
 class InputBox(ct.CTkEntry):
+    '''
+    A class for a more
+    detailed entry box.
+
+    This class allows you
+    to run the given function
+    to check if the input
+    change is acceptable
+    '''
     def __init__(self, 
                  *args,  
                  acceptable: Callable[[str], bool] | None = None, 
@@ -30,6 +39,10 @@ class InputBox(ct.CTkEntry):
 
 
     def set(self, value: str):
+        '''
+        Sets the current value
+        inside of the entry
+        '''
         was_disabled: bool = self.disabled
         if was_disabled: self.disabled = False
         self.delete(0, ct.END)
@@ -38,10 +51,18 @@ class InputBox(ct.CTkEntry):
 
 
     def configure_input(self, require_redraw: bool = False, **kw):
+        '''
+        Configures the entry box.
+        '''
         self.configure(require_redraw=require_redraw, **kw)
 
 
     def on_validate(self, possible_input: str):
+        '''
+        Checks to make sure that
+        the inputted string is 
+        acceptable.
+        '''
         if self.acceptable(possible_input):
             return True
         elif possible_input == "":

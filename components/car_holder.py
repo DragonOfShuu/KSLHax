@@ -12,6 +12,14 @@ from .car_item import CarItem
 from data_types import Car
 
 class CarHolder(ct.CTkFrame, ProcessObject, PaginationHelper):
+    '''
+    A class that holds and
+    shows cars to the user.
+
+    This class breaks the 
+    list into multiple pages
+    that can be crawled through.
+    '''
     def __init__(self, *args: Any, master: ct.CTkBaseClass, data: list[Car], progress: LabeledProgress | None, tasks: BackgroundTasks, **kwargs: Any):
         ct.CTkFrame.__init__(self, *args, master=master, **kwargs)
         ProcessObject.__init__(self, 6)
@@ -29,6 +37,11 @@ class CarHolder(ct.CTkFrame, ProcessObject, PaginationHelper):
 
 
     def _init_ui(self):
+        '''
+        Initializes the UI,
+        and places it into
+        the UI.
+        '''
         self.rowconfigure(0, weight=10)
         self.rowconfigure(1, weight=1)
 
@@ -68,11 +81,18 @@ class CarHolder(ct.CTkFrame, ProcessObject, PaginationHelper):
 
     @property
     def page(self) -> list[Car]:
+        '''
+        Gives the page we are on
+        '''
         return self._page
 
 
     @page.setter
     def page(self, value):
+        '''
+        Changes the page
+        we are viewing 
+        '''
         # If there is nothing on the new page, don't change at all
         if value < 0: return self.page
         if self.page_item_count(value) == -1: return self.page
@@ -85,22 +105,48 @@ class CarHolder(ct.CTkFrame, ProcessObject, PaginationHelper):
     
     
     def page_change(self, _):
+        '''
+        Set the page based off
+        of the input given.
+        '''
         self.page = int(self.new_page_input.get())-1
         self.new_page_input.set(str(self._page+1))
 
     def car_item_finished(self):
+        '''
+        Ran when a car item is
+        finished loading.
+
+        When all car items are
+        finished loading, 
+        reactivate the buttons
+        to allow switching
+        between pages.
+        '''
         self.amount_finished+=1
         if self.amount_finished==self.page_item_count(self.page):
             self.activate_buttons()
     
 
     def clear_content(self):
+        '''
+        Clears all the 
+        car items 
+        presented.
+        '''
         while len(self.car_items) > 0:
             self.car_items[0].destroy()
             del self.car_items[0]
 
 
     def update_page(self):
+        '''
+        Clears the current
+        car items, and 
+        adds the cars 
+        corresponding to the
+        current page.
+        '''
         self.clear_content()
 
         if len(self.collection[self._page]) == 0:
@@ -151,6 +197,10 @@ class CarHolder(ct.CTkFrame, ProcessObject, PaginationHelper):
 
 
     def apply_blacklist(self):
+        '''
+        Applies the blacklistings
+        that were selected.
+        '''
         if len(self.pending_blacklist) == 0: return
 
         black = ResourceManager.blacklist_data.read()
@@ -163,5 +213,9 @@ class CarHolder(ct.CTkFrame, ProcessObject, PaginationHelper):
 
 
     def cleanup(self):
+        '''
+        Should be ran when the
+        car holder is destroyed.
+        '''
         print("Did the exit")
         self.apply_blacklist()

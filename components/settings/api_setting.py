@@ -1,13 +1,15 @@
 import customtkinter as ct
 
+
 from .settings_object import SettingsObject
 from components.input_box import InputBox
 from resources import ResourceManager
+from data_types import Configuration
 
 class ApiSetting(SettingsObject):
-    def __init__(self, master: ct.CTkBaseClass):
-        self.data = ResourceManager.configuration_data.get_configuration()
-        super().__init__(master, "Api")
+    def __init__(self, master: ct.CTkBaseClass, data: Configuration):
+        # self.data = ResourceManager.configuration_data.get_configuration()
+        super().__init__(master, data, "Api")
 
 
     def __url_configs(self, content: ct.CTkBaseClass):

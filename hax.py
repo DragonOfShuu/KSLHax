@@ -20,6 +20,12 @@ main_url: str = "https://cars.ksl.com/search/make/Acura;Ford;Honda;Mazda;Mitsubi
 top_picks_length: int = 3
 
 def requestCars(session: r.Session, headers: dict, page: int, url: str = main_url, first_listing_id: str | None = None) -> list:
+    '''
+    Request the page of
+    cars given. Gives
+    them as a list of 
+    objects.
+    '''
     url_getCars = "https://cars.ksl.com/nextjs-api/proxy?"
 
     assert "https://cars.ksl.com/search/" in url, "URL must be a KSL URL"
@@ -63,6 +69,12 @@ def requestCars(session: r.Session, headers: dict, page: int, url: str = main_ur
 
 
 def requestAllCars(session: r.Session, headers: dict, url: str = main_url, max_pages: int = 5) -> list:
+    '''
+    Request all pages of cars,
+    and join the lists 
+    together to make one large 
+    list of all of the cars.
+    '''
     the_masses: list = []
 
     if ResourceManager.offline_mode:
@@ -81,6 +93,12 @@ def requestAllCars(session: r.Session, headers: dict, url: str = main_url, max_p
 
 
 def filter_wrapper(configuration: Configuration, callback: Callable[[list[Car], ErrorData], None] | None = None) -> None:
+    '''
+    Wraps the filter function
+    to catch any errors
+    that may arise and hand
+    them to the caller.
+    '''
     try:
         return filter(configuration, lambda data : callback(data, ErrorData()))
     except AssertionError as msg:
@@ -99,7 +117,13 @@ def filter_wrapper(configuration: Configuration, callback: Callable[[list[Car], 
 
 def filter(configuration: Configuration, callback: Callable[[list[Car]], None] | None = None) -> None:
     '''
-    Returns -> {top_picks: dict[str], all_new_cars: dict[str], all_cars_listed: dict[str]}
+    Gets all of the cars
+    based off of the 
+    configuration given.
+
+    Runs the callback with
+    all of the cars that 
+    are unblacklisted.
     '''
     if callback==None:  callback = lambda x : print(x)
     if configuration.url == "": configuration.url = main_url
@@ -123,7 +147,7 @@ def filter(configuration: Configuration, callback: Callable[[list[Car]], None] |
 
         ResourceManager.scored_data.write([asdict(x) for x in scored_data])
 
-        mark_old(scored_data:=only_new(scored_data))
+        mark_old(scored_data:=mark_new(scored_data))
 
         finish_time = t.perf_counter()
         print(f"Completed in {round(finish_time - start_time, 3)}s")
@@ -131,7 +155,11 @@ def filter(configuration: Configuration, callback: Callable[[list[Car]], None] |
 
 
 def score_data(data: list[Car], scoring_module: str = f"{os.getcwd()}\\scoring\\default_scoring.py"):
-
+    '''
+    Scores all of the cars
+    given to it, and sorts
+    them by the score given.
+    '''
     try:
         spec = ilu.spec_from_file_location("module.name", scoring_module)
         scoring = ilu.module_from_spec(spec)
@@ -155,13 +183,28 @@ def score_data(data: list[Car], scoring_module: str = f"{os.getcwd()}\\scoring\\
 
 
 def remove_duplicates(data: list[dict]):
-    # returnable = []
-    # [returnable.append(i) for i in data if i not in returnable]
-    # return returnable
-    return data
+    '''
+    Removes all duplicates
+    found in the dictionary
+    '''
+    returnable = []
+    [returnable.append(i) for i in data if i not in returnable]
+    return returnable
 
 
 def format_car(car: dict):
+    '''
+    Formats the car
+    to be ready for
+    conversion into
+    an object and be 
+    used.
+
+    To be more precise,
+    setup the photo key
+    to equal a valid id,
+    or no id at all.
+    '''
     if "photo" in car and len(car["photo"]) > 0:
         photo = car["photo"][0]
         if type(photo) == str:
@@ -172,29 +215,63 @@ def format_car(car: dict):
     return car
 
 
-def convert_to_car(data: list[dict], perform_format: bool = True) -> list[Car]:
-    if perform_format:
+def convert_to_car(data: list[dict], format_car_first: bool = True) -> list[Car]:
+    '''
+    Convert the list of
+    dictionaries given
+    to the Car data
+    type.
+
+    if format_car_first
+    is true, this will
+    format the dictionary
+    using the `format_car`
+    method firsat before
+    converting it into
+    type Car.
+    '''
+    if format_car_first:
         return [from_dict(Car, format_car(i)) for i in data]
     else:
         return [from_dict(Car, i) for i in data]
 
 
-def remove_blacklisted(data: list[Car]):    
+def remove_blacklisted(data: list[Car]):   
+    '''
+    Removes all cars that
+    were previously known
+    as blacklisted.
+    ''' 
     blacklist: list[str] = ResourceManager.blacklist_data.read()
     return [i for i in data if (not i.id in blacklist)]
 
 
-def only_new(data: list[Car]):
+def mark_new(data: list[Car]):
+    '''
+    Marks all previously
+    undiscovered cars as 
+    new.
+
+    This changes the data
+    inside the variable.
+    '''
     old_list: list[str] = ResourceManager.old_data.read()
     new_data = []
     for i in data:
-        if (not i.id in old_list):
+        if i.id not in old_list:
             i.newCar = True
         new_data.append(i)
     return new_data
 
 
 def mark_old(data: list[Car]):
+    '''
+    Writes all cars given
+    as old.
+
+    This changes the data
+    written to disk.
+    '''
     x = ResourceManager.old_data.read()
 
     for i in data: x.append(i.id)

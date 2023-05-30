@@ -1,10 +1,13 @@
 import customtkinter as ct
 from abc import abstractmethod, ABC
 
+from data_types import Configuration
+
 class SettingsObject(ct.CTkFrame, ABC):
-    def __init__(self, master: ct.CTkBaseClass, title: str = "basic setting"):
+    def __init__(self, master: ct.CTkBaseClass, data: Configuration, title: str = "basic setting"):
         super().__init__(master=master, corner_radius=0)
 
+        self.data = data
         self.__init__ui(title)
 
 

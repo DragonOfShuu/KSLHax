@@ -1,6 +1,12 @@
 import customtkinter as ct
 
 class LabeledProgress(ct.CTkFrame):
+    '''
+    A progress frame with
+    the ability to show 
+    the progress of tasks
+    being performed
+    '''
     def __init__(self, *args, master: ct.CTkBaseClass, text: str = "", total_processees: int = 1, current_processee: int = 1, **kwargs):
         super().__init__(*args, master=master, **kwargs)
         self._text = text
@@ -11,6 +17,10 @@ class LabeledProgress(ct.CTkFrame):
         self._init_ui()
 
     def _init_ui(self):
+        '''
+        Initialize and attach
+        the UI components
+        '''
         self.rowconfigure(0, weight=2, uniform="true")
         self.rowconfigure(1, weight=1, uniform="true")
 
@@ -40,18 +50,34 @@ class LabeledProgress(ct.CTkFrame):
 
     @property
     def processees(self):
+        '''
+        Index of the current processee
+        '''
         return self._current_processee
 
     @processees.setter
     def processees(self, value):
+        '''
+        Set the index of the 
+        current processee
+        '''
         self._current_processee = value
         self.update()
         return self._current_processee
 
     def update(self):
+        '''
+        Recalculates the
+        text for the 
+        processees
+        '''
         self.process_label.configure(text=f"{self._current_processee} / {self._total_processees}")
 
     def complete_processee(self):
+        '''
+        Adds a 1 to the completed
+        processees in the UI
+        '''
         if self._current_processee >= self._total_processees:
             self._current_processee=self._total_processees; return;
         self._current_processee+=1
@@ -64,18 +90,65 @@ class LabeledProgress(ct.CTkFrame):
         self.update()
 
     def set(self, value: float):
+        '''
+        Sets the progress of 
+        completion from; range
+        is from 0 to 1
+        '''
         self.progress.set(value)
 
     def start(self):
+        '''
+        Start animation
+        for indeterminate
+        mode.
+
+        Indeterminate mode, 
+        meaning that the
+        progress bar doesn't
+        know when the task
+        will be completed
+        '''
         self.progress.start()
 
     def stop(self):
+        '''
+        Stop animation
+        for indeterminate 
+        mode.
+
+        Indeterminate mode, 
+        meaning that the
+        progress bar doesn't
+        know when the task
+        will be completed
+        '''
         self.progress.stop()
 
     def determinate_mode(self):
+        '''
+        Enable determinate
+        mode.
+
+        Determinate mode,
+        meaning that the 
+        progress bar knows
+        when the task
+        will be completed
+        '''
         self.progress.configure(mode="determinate")
 
     def indeterminate_mode(self):
+        '''
+        Enable indeterminate
+        mode.
+
+        Indeterminate mode, 
+        meaning that the
+        progress bar doesn't
+        know when the task
+        will be completed
+        '''
         self.progress.configure(mode = "indeterminate")
 
     def pack(self, **kwargs):

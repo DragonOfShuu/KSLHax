@@ -9,6 +9,11 @@ class ErrorData:
     stack_trace: str = ""
 
     def is_empty(self) -> bool:
+        '''
+        Check if this error
+        is empty; aka it 
+        has no message.
+        '''
         return self.simple_msg == "" and self.stack_trace == ""
     
     @property

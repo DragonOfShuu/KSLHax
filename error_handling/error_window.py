@@ -3,6 +3,11 @@ import customtkinter as ct
 from .errors import ErrorData
 
 class TopErrorWindow(ct.CTkToplevel):
+    '''
+    A class for Error Windows
+    that appear on top of
+    an existing window
+    '''
     def __init__(self, error_data: ErrorData):
         super().__init__()
         self._start_ui(error_data.title, error_data.text, error_data.error)
@@ -29,6 +34,12 @@ class TopErrorWindow(ct.CTkToplevel):
         self.minsize(600, 400)
 
 class ApplicationErrorWindow(ct.CTk):
+    '''
+    A class for Error Windows
+    that need to become their
+    own application, and their
+    own mainloop.
+    '''
     def __init__(self, error_data: ErrorData):
         super().__init__()
         self._start_ui(error_data.title, error_data.text, error_data.error)

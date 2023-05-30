@@ -11,12 +11,33 @@ from data_types import ImageRequest
 from resources import ResourceManager
 
 class ImageLoader:
+    '''
+    Queues images to 
+    be loaded.
+
+    To be more precise,
+    it queues each image
+    given to it, and runs
+    the downloader/loader
+    in a separate thread.
+    '''
     def __init__(self):
         self.images_queue: q.Queue[ImageRequest] = q.Queue(50)
         self.image_thread: th.Thread|None = None
 
 
     def _thread(self):
+        '''
+        The method that is
+        ran in a separate
+        thread.
+
+        Loads each image 
+        that were queued
+        in order; downloads
+        the image if 
+        needed.
+        '''
         while not self.images_queue.empty():
             image = self.images_queue.get()
 
@@ -42,6 +63,13 @@ class ImageLoader:
 
 
     def update(self) -> None:
+        '''
+        Check for images that
+        need to be queued, and
+        if so, create a new
+        thread to begin loading
+        them.
+        '''
         # If there is nothing to do, ignore
         if self.images_queue.empty(): return
 
@@ -58,6 +86,17 @@ class ImageLoader:
 
 
     def __call__(self, time_made: float | Literal["default"], image_url: str, image_full_name: str, callback: Callable[[str], None]) -> None:
+        '''
+        This creates a new
+        image requested to
+        be loaded. This 
+        gives a temporary
+        image to use, and
+        utilizes a callback
+        given to change the
+        image to the new
+        loaded image.
+        '''
         if time_made.upper() == "DEFAULT":
             time_made = t.perf_counter()
         

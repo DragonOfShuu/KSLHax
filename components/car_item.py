@@ -36,6 +36,10 @@ class CarItem(ct.CTkFrame):
     
 
     def _crop_image(self, image: Image.Image):
+        '''
+        Crops the image to be
+        a square.
+        '''
         width, height = image.size
         if width == height:
             return image
@@ -48,6 +52,9 @@ class CarItem(ct.CTkFrame):
 
 
     def _isolate_image_name(self, id: str):
+        '''
+        
+        '''
         found_start: bool = False
         returnable: str = ""
         for i in id:
@@ -58,6 +65,9 @@ class CarItem(ct.CTkFrame):
 
 
     def _get_image_thread(self, image_full_name: str, already_existed: bool):
+        '''
+        
+        '''
         # Open Image
         opened_image: Image.Image = Image.open(image_full_name)
         
@@ -79,6 +89,9 @@ class CarItem(ct.CTkFrame):
 
 
     def _solve_image(self) -> Image.Image:
+        '''
+        
+        '''
         if self.data.photo == None:
             self.finished()
             return Image.open(ResourceManager.default_image)
@@ -89,6 +102,9 @@ class CarItem(ct.CTkFrame):
 
 
     def _register_image(self) -> None:
+        '''
+        
+        '''
         opened_image = self._solve_image()
         self.ctk_image = ct.CTkImage(
             dark_image=opened_image, 
@@ -98,6 +114,10 @@ class CarItem(ct.CTkFrame):
 
 
     def blacklist_toggle(self) -> None:
+        '''
+        Toggles the blacklist
+        for the car item
+        '''
         if self.blacklist_checkbox.get():
             self.add_blacklist(self.data.id)
         else:
@@ -105,6 +125,10 @@ class CarItem(ct.CTkFrame):
 
 
     def _init_ui(self, is_black_listed: bool):
+        '''
+        Initializing and applying
+        the UI to the item frame.
+        '''
         # self.columnconfigure(0, weight=2)
         self.columnconfigure(1, weight=2)
 
