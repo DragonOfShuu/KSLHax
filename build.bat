@@ -1,3 +1,1 @@
-pyinstaller --noconfirm --onedir --windowed --add-data "x:\Assets\Code\Random Python\KSL_Filter\.venv\Lib\site-packages\customtkinter;customtkinter" "KSL-Hax.py"
-
-@REM ;x:\Assets\Code\Random Python\KSL_Filter\backups
+pyinstaller -y --windowed --add-data="%~dp0.venv\Lib\site-packages\customtkinter;customtkinter" --add-data="%~dp0assets;assets" --add-data="%~dp0backups;backups" --icon="%~dp0assets/AppIcon.ico" "KSL-Hax.py"
