@@ -12,7 +12,7 @@ The user interface is made simple, and easy to understand. Items are placed wher
 ### Empty
 ![Main menu](assets/readme_images/MainPageBufferEmpty.png)
 ### Populated
-![Main menu populated](assets\readme_images\MainPagePopulated.png)
+![Main menu populated](assets/readme_images/MainPagePopulated.png)
 
 *(Images are blurred and some names are blocked to protect my privacy, and so I don't store random people's data publicly for forever)*
 
@@ -27,7 +27,7 @@ Make Model "Trim" year (city, state)
 ```
 
 ## Settings
-![Settings window](assets\readme_images\SettingsWindow.png)
+![Settings window](assets/readme_images/SettingsWindow.png)
 
 The Settings window allows you to manage important variables for scoring, as well as talking to KSL Cars.
 
