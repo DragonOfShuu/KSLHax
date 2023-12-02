@@ -26,5 +26,3 @@ class ProcessObject:
             return
         self.completed_processes+=1
     
-
-    # def process_completed(self): pass

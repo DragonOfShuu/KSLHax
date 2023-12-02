@@ -7,6 +7,7 @@ from background_tasks import BackgroundTasks
 from resources import ResourceManager
 from utils import ProcessObject
 from data_types import Car
+from more_car_info import MoreCarInfo
 
 class CarItem(ct.CTkFrame):
     def __init__(self, 
@@ -216,5 +217,8 @@ class CarItem(ct.CTkFrame):
  
         self.dealer = ct.CTkLabel(master=self.content, text=self.data.sellerType, font=ct.CTkFont("Trebuchet MS", size=20))
         self.dealer.grid(row=0, column=2)
+
+        self.more_info = ct.CTkButton(master=self.content, text="More Info", font=ct.CTkFont("Trebuchet MS", size=20), command=(lambda : MoreCarInfo(car=self.data).grab_set()))
+        self.more_info.grid(row=2, column=2)
 
         self.process.complete_process()
