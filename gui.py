@@ -122,7 +122,7 @@ class Gui(ct.CTkFrame):
         self.progress.complete_processee()
 
         self.progress.text = "Loading Cars"
-        self.frame_of_cars = CarHolder(master=self, data=data, progress=self.progress, tasks=self.tasks)
+        self.frame_of_cars = CarHolder(master=self, data=data, root_window=self.master,  progress=self.progress, tasks=self.tasks)
         
         self.progress.pack_forget()
 

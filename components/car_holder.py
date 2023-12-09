@@ -20,7 +20,7 @@ class CarHolder(ct.CTkFrame, ProcessObject, PaginationHelper):
     list into multiple pages
     that can be crawled through.
     '''
-    def __init__(self, *args: Any, master: ct.CTkBaseClass, data: list[Car], progress: LabeledProgress | None, tasks: BackgroundTasks, **kwargs: Any):
+    def __init__(self, *args: Any, master: ct.CTkBaseClass, root_window: ct.CTkBaseClass, data: list[Car], progress: LabeledProgress | None, tasks: BackgroundTasks, **kwargs: Any):
         ct.CTkFrame.__init__(self, *args, master=master, **kwargs)
         ProcessObject.__init__(self, 6)
         PaginationHelper.__init__(self, data, 3)
@@ -33,8 +33,8 @@ class CarHolder(ct.CTkFrame, ProcessObject, PaginationHelper):
 
         self._init_ui()
 
-        self.master.master.bind("<Left>", lambda e: self.left_button_clicked())
-        self.master.master.bind("<Right>", lambda e: self.right_button_clicked())
+        root_window.bind("<Left>", lambda e: self.left_button_clicked())
+        root_window.bind("<Right>", lambda e: self.right_button_clicked())
 
         self.page = 0
 
