@@ -33,6 +33,9 @@ class CarHolder(ct.CTkFrame, ProcessObject, PaginationHelper):
 
         self._init_ui()
 
+        self.master.master.bind("<Left>", lambda e: self.left_button_clicked())
+        self.master.master.bind("<Right>", lambda e: self.right_button_clicked())
+
         self.page = 0
 
 
@@ -78,7 +81,6 @@ class CarHolder(ct.CTkFrame, ProcessObject, PaginationHelper):
 
         self.bottom_bar.grid(row=1, column=0, sticky=ct.NSEW)
 
-
     @property
     def page(self) -> list[Car]:
         '''
@@ -93,10 +95,9 @@ class CarHolder(ct.CTkFrame, ProcessObject, PaginationHelper):
         Changes the page
         we are viewing 
         '''
-        # If there is nothing on the new page, don't change at all
-        if value < 0: return self.page
-        if self.page_item_count(value) == -1: return self.page
-        self._page = value
+        new_page = value % len(self.collection)
+        if hasattr(self, "_page") and new_page == self._page: return
+        self._page = new_page
         self.amount_finished = 0
         self.deactivate_buttons()
         self.update_page()
@@ -170,10 +171,12 @@ class CarHolder(ct.CTkFrame, ProcessObject, PaginationHelper):
 
 
     def left_button_clicked(self):
+        if not self.page_changing_allowed: return
         self.page = self.page-1
     
 
     def right_button_clicked(self):
+        if not self.page_changing_allowed: return
         self.page = self.page+1
 
 

@@ -212,7 +212,7 @@ class CarItem(ct.CTkFrame):
         self.score_label = ct.CTkLabel(master=self.content, text=f"Score: {self.data.score}", font=ct.CTkFont("Trebuchet MS", size=20))
         self.score_label.grid(row=2, column=1)
 
-        self.price_label = ct.CTkLabel(master=self.content, text=f"Price: ${self.data.price}", font=ct.CTkFont("Trebuchet MS", size=20))
+        self.price_label = ct.CTkLabel(master=self.content, text=f"Price: ${self.data.price:,}", font=ct.CTkFont("Trebuchet MS", size=20))
         self.price_label.grid(row=0, column=1)
  
         self.dealer = ct.CTkLabel(master=self.content, text=self.data.sellerType, font=ct.CTkFont("Trebuchet MS", size=20))
