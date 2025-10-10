@@ -13,4 +13,10 @@ try:
 except CompletelyDestroyedException as c:
     ApplicationErrorWindow(c.message).start()
 except Exception as e:
-    ApplicationErrorWindow(ErrorData(title="Ya done did.", stack_trace=traceback.format_exc())).start()
+    try:
+        ApplicationErrorWindow(ErrorData(title="Ya done did.", stack_trace=traceback.format_exc())).start()
+    except Exception as e2:
+        print("A critical error occurred before the GUI could be started.")
+        print("Here is the error:")
+        print("".join(traceback.format_exception_only(e2)))
+        

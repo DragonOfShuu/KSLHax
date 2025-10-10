@@ -80,7 +80,7 @@ class Gui(ct.CTkFrame):
         the frame_of_cars to cleanup,
         and deletes it.
         '''
-        if not self.frame_of_cars == None: 
+        if self.frame_of_cars is not None: 
             self.frame_of_cars.pack_forget()
             self.frame_of_cars.cleanup()
             del self.frame_of_cars

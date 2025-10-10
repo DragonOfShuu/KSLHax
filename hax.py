@@ -172,8 +172,10 @@ def score_data(data: list[Car], scoring_module: str = f"{os.getcwd()}\\scoring\\
         
             score = scoring.__score__(item)
 
-            if score == None: continue
-            else: item.score = score
+            if score is None: 
+                continue
+            else: 
+                item.score = score
 
             new_list.append(item)
 
@@ -207,7 +209,7 @@ def format_car(car: dict):
     '''
     if "photo" in car and len(car["photo"]) > 0:
         photo = car["photo"][0]
-        if type(photo) == str:
+        if type(photo) is str:
             photo = j.loads(photo)
         car["photo"] = photo.get("id")
     else:
@@ -243,7 +245,7 @@ def remove_blacklisted(data: list[Car]):
     as blacklisted.
     ''' 
     blacklist: list[str] = ResourceManager.blacklist_data.read()
-    return [i for i in data if (not i.id in blacklist)]
+    return [i for i in data if (i.id not in blacklist)]
 
 
 def mark_new(data: list[Car]):
@@ -274,6 +276,7 @@ def mark_old(data: list[Car]):
     '''
     x = ResourceManager.old_data.read()
 
-    for i in data: x.append(i.id)
+    for i in data: 
+        x.append(i.id)
     
     ResourceManager.old_data.write(x)
