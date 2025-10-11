@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Literal
 
+
 @dataclass
 class Car:
     price: int
@@ -11,7 +12,7 @@ class Car:
     titleType: str = "Unknown"
     city: str = "Unknown"
     fuel: str = "Unknown"
-    paint: list[str] = field(default_factory=list) 
+    paint: list[str] = field(default_factory=list)
     body: Literal["Coupe", "Sedan", "Hatchback"] | str = "Unkown"
     modifyTime: int = 0
     transmission: Literal["Automanual", "Automatic", "Manual"] | str = "Unkown"
@@ -24,7 +25,9 @@ class Car:
     email: str = "Unknown"
     memberId: int = 0
     mileage: int = 1234
-    contactMethod: list[Literal["phone","email","text","messages","phoneEmail"] | str] = field(default_factory=list) 
+    contactMethod: list[
+        Literal["phone", "email", "text", "messages", "phoneEmail"] | str
+    ] = field(default_factory=list)
     zip: str = "Unknown"
     address1: str = "Unknown"
     makeYear: int = 1970
@@ -34,7 +37,7 @@ class Car:
     expireTime: int = 0
     mobilePhone: str = "Unknown"
     createTime: int = 0
-    dealer: dict = field(default_factory=dict) 
+    dealer: dict = field(default_factory=dict)
     sellerType: Literal["Dealership", "For Sale By Owner"] | str = "Unkown"
     status: Literal["Active"] = "Active"
     favoritedByCurrentUser: bool = False

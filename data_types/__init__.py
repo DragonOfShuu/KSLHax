@@ -1,3 +1,3 @@
-from .car import Car
-from .image_request import ImageRequest
-from .configuration import Configuration
+from .car import Car as Car
+from .image_request import ImageRequest as ImageRequest
+from .configuration import Configuration as Configuration

@@ -2,21 +2,27 @@ import traceback
 import platform as pf
 import os
 
-from error_handling import CompletelyDestroyedException, ApplicationErrorWindow, ErrorData
+from error_handling import (
+    CompletelyDestroyedException,
+    ApplicationErrorWindow,
+    ErrorData,
+)
 
-os.system('cls' if pf.system() == "Windows" else "clear")
+os.system("cls" if pf.system() == "Windows" else "clear")
 
 try:
-    from app import App 
+    from app import App
+
     app = App()
     app.start()
 except CompletelyDestroyedException as c:
     ApplicationErrorWindow(c.message).start()
-except Exception as e:
+except Exception:
     try:
-        ApplicationErrorWindow(ErrorData(title="Ya done did.", stack_trace=traceback.format_exc())).start()
+        ApplicationErrorWindow(
+            ErrorData(title="Ya done did.", stack_trace=traceback.format_exc())
+        ).start()
     except Exception as e2:
         print("A critical error occurred before the GUI could be started.")
         print("Here is the error:")
         print("".join(traceback.format_exception_only(e2)))
-        

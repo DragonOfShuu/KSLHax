@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable
 
+
 @dataclass
 class ImageRequest:
     time_made: float
